@@ -1,5 +1,8 @@
 # coding: utf-8
 import requests
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
+mongo_client = MongoClient()['elasticPlaces']['places']
 
 api_key = "AIzaSyDeXdp2tLi0n7GjZOYalJmgXwOZ9N_pBuE"
 
@@ -40,7 +43,7 @@ def parse_page(res):
 		re = requests.get(place_details_link)
 		print(re.url)
 		det = re.json()["result"]
-		to_be_deleted = ["vicinity", "utc_offset", "reference", "id", "adr_address", "address_components", "scope", "alt_ids", "permanently_closed", "photos", "international_phone_number"]
+		to_be_deleted = ["place_id", "vicinity", "utc_offset", "reference", "id", "adr_address", "address_components", "scope", "alt_ids", "permanently_closed", "photos", "international_phone_number"]
 		try:
 			del det["opening_hours"]["open_now"]
 		except KeyError:
@@ -58,6 +61,11 @@ def parse_page(res):
 				del det[elem]
 			except KeyError:
 				pass
+		det["_id"] = place_id
+		try:
+			mongo_client.insert(det)
+		except DuplicateKeyError:
+			pass		
 		print(det["name"])
 
 x = 37976277

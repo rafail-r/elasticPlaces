@@ -1,0 +1,14 @@
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+{% if results.count > 0 %}
+
+{% for result in results %}
+   	<li class="list-group-item">
+   		<a href="details/{{ result.id  }}"> {{ result.title  }}
+   	</li>
+{% endfor %}
+
+{% else %}
+
+<li>None to show!</li>
+
+{% endif %}

@@ -5,19 +5,26 @@ from pymongo.errors import DuplicateKeyError
 mongo_client = MongoClient()['elasticPlaces']['places']
 
 api_key = "AIzaSyDeXdp2tLi0n7GjZOYalJmgXwOZ9N_pBuE"
+radius = 50 
+coord_step = 750 # ~75m
+square_side = 20  # 20 x ~75m = ~1.500m each side of the square
+start_x = 0
+start_y = 18 # last request stoped at (start_x, start_y) so we are continuing the requests from there
 
-def search_rect(x, y, steps):
-	for i in range(steps):
-		for j in range(steps):
-			y += 500
+def search_square(x, y, steps):		
+	for i in range(start_x, steps):
+		if (i!=start_x):
+			start_y = 0
+		for j in range(start_y, steps):
+			y += coord_step
+			print("(i, j) = (%d, %d)" %(i, j))
 			nearbysearch(x, y)
-		x += 500
+		x += coord_step
 		
-	
 def nearbysearch(x, y):
 	location = str(x)[:2] + "." + str(x)[2:] + "," + str(y)[:2] + "." + str(y)[2:]
 	token_parameter = ""
-	payload = {'location': location, 'key': api_key, 'radius': 20}
+	payload = {'location': location, 'key': api_key, 'radius': radius}
 	nearby_search_link = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
 	r = requests.get(nearby_search_link, params=payload)
@@ -72,4 +79,4 @@ x = 37976277
 y = 23721380
 print
 print
-search_rect(x, y, 2)
+search_square(x, y, square_side)

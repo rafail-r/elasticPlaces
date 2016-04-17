@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import print_function
 import requests
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
@@ -11,6 +12,18 @@ coord_step = 750 # ~75m
 square_side = 20  # 20 x ~75m = ~1.500m each side of the square
 start_x = 0
 start_y = 18 # last request stoped at (start_x, start_y) so we are continuing the requests from there
+fields_to_be_deleted = ["place_id", \
+				 		"vicinity", \
+						 "utc_offset", \
+						 "reference", \
+						 "id", \
+						 "adr_address", \
+						 "address_components", \
+						 "scope", \
+						 "alt_ids", \
+						 "permanently_closed", \
+						 "photos", \
+						 "international_phone_number"]
 
 def debug(*printables):
 	if debug_flag:
@@ -59,18 +72,7 @@ def parse_page(res):
 		re = requests.get(place_details_link)
 		debug(re.url)
 		det = re.json()["result"]
-		to_be_deleted = ["place_id", \
-						 "vicinity", \
-						 "utc_offset", \
-						 "reference", \
-						 "id", \
-						 "adr_address", \
-						 "address_components", \
-						 "scope", \
-						 "alt_ids", \
-						 "permanently_closed", \
-						 "photos", \
-						 "international_phone_number"]
+
 		try:
 			del det["opening_hours"]["open_now"]
 		except KeyError:
@@ -83,7 +85,7 @@ def parse_page(res):
 			del det["geometry"]["viewport"]
 		except KeyError:
 			pass	
-		for elem in to_be_deleted:
+		for elem in fields_to_be_deleted:
 			try:
 				del det[elem]
 			except KeyError:

@@ -10,8 +10,11 @@ api_key = "AIzaSyDeXdp2tLi0n7GjZOYalJmgXwOZ9N_pBuE"
 radius = 50 
 coord_step = 750 # ~75m
 square_side = 20  # 20 x ~75m = ~1.500m each side of the square
-start_x = 0
-start_y = 18 # last request stoped at (start_x, start_y) so we are continuing the requests from there
+i_stop = 0
+j_stop = 0
+x = 37976277
+y = 23721380
+
 fields_to_be_deleted = ["place_id", \
 				 		"vicinity", \
 						"utc_offset", \
@@ -24,6 +27,7 @@ fields_to_be_deleted = ["place_id", \
 						"permanently_closed", \
 						"photos", \
 						"international_phone_number"
+						]
 
 def debug(*printables):
 	if debug_flag:
@@ -34,15 +38,24 @@ def debug(*printables):
 
 # gets data for all places (or at least most of them) in a square defined by the 
 # (x, y) coordinates 
-def search_square(x, y, square_side):		
-	for i in range(start_x, square_side):
-		if (i!=start_x):
-			start_y = 0
-		for j in range(start_y, square_side):
-			y += coord_step
+def search_square():	
+	real_x = x + i_stop * coord_step
+	real_y = y + j_stop * coord_step
+	for j in range(j_stop, square_side):
+		debug("(i, j) = (%d, %d)" %(i_stop, j))
+		#debug("(real_xreal_x, real_y) = (%d, %d)" %(real_x, real_y))
+		nearbysearch(real_x, real_y)
+		real_y += coord_step
+
+	real_x += coord_step
+	real_y = y
+	for i in range(i_stop + 1, square_side):
+		for j in range(square_side):
 			debug("(i, j) = (%d, %d)" %(i, j))
-			nearbysearch(x, y)
-		x += coord_step
+			#debug("(real_xreal_x, real_y) = (%d, %d)" %(real_x, real_y))
+			nearbysearch(real_x, real_y)
+			real_y += coord_step
+		real_x += coord_step
 		
 # submits a request for places around the (x, y) coordinates, and stores the data
 def nearbysearch(x, y):
@@ -112,8 +125,7 @@ def parse_page(page):
 
 
 
-x = 37976277
-y = 23721380
+
 debug()
 debug()
-search_square(x, y, square_side)
+search_square(18,3)

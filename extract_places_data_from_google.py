@@ -3,6 +3,9 @@ from __future__ import print_function
 import requests
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+# emine (i, j) = (1, 17)
+
+
 mongo_client = MongoClient()['elasticPlaces']['places']
 
 debug_flag = True
@@ -10,8 +13,8 @@ api_key = "AIzaSyDeXdp2tLi0n7GjZOYalJmgXwOZ9N_pBuE"
 radius = 50 
 coord_step = 750 # ~75m
 square_side = 20  # 20 x ~75m = ~1.500m each side of the square
-i_stop = 0
-j_stop = 0
+i_stop = 1
+j_stop = 17
 x = 37976277
 y = 23721380
 
@@ -128,4 +131,4 @@ def parse_page(page):
 
 debug()
 debug()
-search_square(18,3)
+search_square()

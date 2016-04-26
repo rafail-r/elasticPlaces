@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 # Establish Connection with Elasticsearch
 elastic_client = Elasticsearch()
-index_name = 'my_index'
+index_name = 'elasticplaces'
 
 # Establish Connection with MongoDB
 mongo_client = MongoClient()['test_db']['books']

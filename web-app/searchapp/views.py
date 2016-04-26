@@ -6,53 +6,63 @@ import json, requests
 from bson.objectid import ObjectId
 from apps import mongo_client, elastic_client, index_name
 
+
 # homepage
 def search_page(request):
     return render(request, "searchapp/search.html")
 
-# query mongodb with keyword, display at results.html
+# query elasticsearch with keyword, display at results.html
 def search_results(request):
     search_key = request.GET['search']
-    title_results = mongo_client.find({'title': {'$regex' : '.*' + search_key + '.*'}})
-    results = []
-    for i in title_results:
-        temp = {
-            "id"    : i['_id'],
-            "title" : i['title']
+    search_query = {
+        "query": {
+            "bool": {
+                "should": [
+                    { "match" : { "name" : search_key }},
+                    { "match" : { "formatted_address" : search_key }},
+                    { "match" : { "types" : search_key }}
+                ]
+            }
         }
+    }
+    results = []
+    res = elastic_client.search(index=index_name, body=search_query)
+    for item in res['hits']['hits']:
+        temp = {}
+        temp['name'] = item['_source']['name']
+        temp['formatted_address'] = item['_source']['formatted_address']
+        temp['id'] = item['_id']
         results.append(temp)
     return render(request, "searchapp/results.html", {'res' : results})
 
-# query mongodb with id, display at details.html
+# query elasticsearch with id, display at details.html
 def get_by_id(request, _id):
-    print _id
-    title_results = mongo_client.find({'_id': _id})
-    results = []
-    for i in title_results:
-        temp = {
-            "id"    : i['_id'],
-            "title" : i['title']
-        }
-        results.append(temp)
-    return render(request, "searchapp/details.html", {'res' : results})
+    res = elastic_client.get(index="elasticplaces", doc_type='places', id= _id)
+    result = res['_source']
+    result['id'] = res['_id']
+    return render(request, "searchapp/details.html", {'res' : result})
 
 # ajax-livesearch
 def live_search(request):
-    title_results = []
+    live_results = []
     if request.method == "POST":
         search_text = request.POST['search_text']
         search_query = {
-            "query" : {
-                "match" : {
-                    "title" : search_text
+            "query": {
+                "bool": {
+                    "should": [
+                        { "match" : { "name" : search_text }},
+                        { "match" : { "formatted_address" : search_text }},
+                        { "match" : { "types" : search_text }}
+                    ]
                 }
             }
         }
         res = elastic_client.search(index=index_name, body=search_query)
         for item in res['hits']['hits']:
-            temp = {
-                "id" : item['_id'],
-                "title" : item['_source']['title']
-            }
-            title_results.append(temp)
-    return render(request, 'searchapp/ajax_search.html', {'results' : title_results})
+            temp = {}
+            temp['name'] = item['_source']['name']
+            temp['formatted_address'] = item['_source']['formatted_address']
+            temp['id'] = item['_id']
+            live_results.append(temp)
+    return render(request, 'searchapp/ajax_search.html', {'results' : live_results})

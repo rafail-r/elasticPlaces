@@ -3,7 +3,7 @@
 
 {% for result in res %}
    	<li class="list-group-item">
-   		<a href="/searchapp/details/{{ result.id  }}"> {{ result.title  }}
+   		<a href="/searchapp/details/{{ result.id  }}"> {{ result.name  }} , {{ result.formatted_address}}
    	</li>
 {% endfor %}
 

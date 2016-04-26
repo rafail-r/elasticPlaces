@@ -1,14 +1,9 @@
 <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-{% if res.count > 0 %}
 
-{% for result in res %}
-	ID = {{ result.id }} </br>
-   	TITLE = {{ result.title  }} </br>
+
+
+	id = {{ res.id }} </br>
+   	name = {{ res.name  }} </br>
+   	formatted_address = {{ res.formatted_address }} </br>
+
    	more info to come...
-{% endfor %}
-
-{% else %}
-
-<li>None to show!</li>
-
-{% endif %}

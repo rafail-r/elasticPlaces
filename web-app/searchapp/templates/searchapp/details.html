@@ -1,9 +1,48 @@
-<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+<html>
+<head>
+	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+	<link href='https://fonts.googleapis.com/css?family=Roboto:500,300,700,400' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="/static/searchapp/search.css" />
+</head>
 
-
-
-	id = {{ res.id }} </br>
-   	name = {{ res.name  }} </br>
-   	formatted_address = {{ res.formatted_address }} </br>
-
-   	more info to come...
+<div class="header">
+	<div class="container">
+		<h1><a href="/searchapp/home" style="text-decoration : none; color : #000000;"> Elastic Web </a></h1>
+	</div>
+</div>
+<div class="main">
+	<div class="container">
+		<div class="row">
+			<table class="table">
+				<tbody>
+					<tr> 
+						<td> name </td>
+						<td> {{ res.name }} </td>
+					</tr>
+					<tr> 
+						<td> website </td>
+						<td> <a href="{{ res.website }}"> {{ res.website }} </a></td>
+					</tr>
+					<tr> 
+						<td> address </td>
+						<td> {{ res.formatted_address }} </td>
+					</tr>
+					<tr> 
+						<td> phone number </td>
+						<td> {{ res.formatted_phone_number }} </td>
+					</tr>
+					<tr><td></td><td></td></tr>
+				</tbody>
+   			</table>
+		</div>
+	</div>
+</div>
+<div class="footer">
+	<div class="container">
+		<h2>Available for iPhone and Android.</h2>
+		<img src="/static/searchapp/img/app-store.png" width="360px" />
+		<img src="/static/searchapp/img/google-play-badge.png" width="360px" />
+	</div>
+</div>
+</body>
+</html>

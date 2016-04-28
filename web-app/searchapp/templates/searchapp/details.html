@@ -3,6 +3,28 @@
 	<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
 	<link href='https://fonts.googleapis.com/css?family=Roboto:500,300,700,400' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="/static/searchapp/search.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	<script>
+		$(document).ready(function() {
+		    var latlng = new google.maps.LatLng("{{ res.location.lat }}", "{{ res.location.lon }}");
+		    var mapOptions = {
+		        zoom: 15,
+		        center: latlng,
+		        mapTypeControl: false,
+		        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+		        mapTypeId: google.maps.MapTypeId.ROADMAP
+		    };
+		    map = new google.maps.Map($('.map')[0], mapOptions);
+		
+		    var marker = new google.maps.Marker({
+		        position: latlng,
+		        map: map,
+		        title:"{{ res.name }}"
+		    });
+		});
+	</script>
 </head>
 
 <div class="header">
@@ -12,29 +34,50 @@
 </div>
 <div class="main">
 	<div class="container">
-		<div class="row">
+		<div class="row" >
+			<div class="col-md-8">
 			<table class="table">
 				<tbody>
 					<tr> 
-						<td> name </td>
+						<td> Name </td>
 						<td> {{ res.name }} </td>
 					</tr>
 					<tr> 
-						<td> website </td>
+						<td> Rating </td>
+						<td> {{ res.rating }} </td>
+					</tr>
+					<tr> 
+						<td> Website </td>
 						<td> <a href="{{ res.website }}"> {{ res.website }} </a></td>
 					</tr>
 					<tr> 
-						<td> address </td>
+						<td> Address </td>
 						<td> {{ res.formatted_address }} </td>
 					</tr>
 					<tr> 
-						<td> phone number </td>
+						<td> Phone Number </td>
 						<td> {{ res.formatted_phone_number }} </td>
 					</tr>
+					<tr> 
+						<td> <a href="#demo" data-toggle="collapse">Reviews &darr;</a></td>
+						<td> {{ res.user_ratings_total }} </td>
+					</tr>
+					
 					<tr><td></td><td></td></tr>
 				</tbody>
    			</table>
+   			<div id="demo" class="collapse">
+   			{% for review in res.reviews %}
+				<li class="list-group-item"> {{ review.author_name }}  :  {{ review.rating }} &#9733;
+				</br> {{ review.text }} </li>
+			{% endfor %}
+			</div>
+			</div>
+			<div class="col-md-4">
+				<div class="map" style="width: 400px; height: 400px;"></div>
+			</div>
 		</div>
+		
 	</div>
 </div>
 <div class="footer">

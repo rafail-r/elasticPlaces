@@ -171,4 +171,7 @@ html, body {
    margin: 0 10px;
 }
 
-
+a:hover, a:visited, a:link, a:active {
+   text-decoration : none; 
+   color : #000000;
+}

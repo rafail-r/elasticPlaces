@@ -1,0 +1,33 @@
+<html>
+  <head>
+      <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+      <link href='https://fonts.googleapis.com/css?family=Roboto:500,300,700,400' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" type="text/css" href="/static/searchapp/search.css" />
+      <script src="/static/searchapp/assets/js/jquery-2.0.0.min.js"></script>
+      <script src="/static/searchapp/assets/js/ajax.js"></script>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="container">
+        <h1><a href="/searchapp" style="text-decoration : none; color : #000000;"> Elastic Web </a></h1>
+      </div>
+    </div>
+    <div class="main">
+      <div class="container">
+        <div class="row">
+          <div id="custom-search-input">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="container">
+        <h2>Available for iPhone and Android.</h2>
+        <img src="/static/searchapp/img/app-store.png" width="360px" />
+        <img src="/static/searchapp/img/google-play-badge.png" width="360px" />
+      </div>
+    </div>
+  </body>
+</html>

@@ -6,11 +6,14 @@ import json, requests
 from bson.objectid import ObjectId
 from apps import mongo_client, elastic_client, index_name, max_size
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.http import JsonResponse
 
 # homepage
 def search_page(request):
     return render(request, "searchapp/search.html")
+
+def rest(request):
+    return JsonResponse({'message': 'Hello', 'status_code': 200})
 
 # query elasticsearch with keyword, display at results.html
 def search_results(request):

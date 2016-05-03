@@ -12,31 +12,31 @@ from django.http import JsonResponse
 def search_page(request):
     return render(request, "searchapp/search.html")
 
-def rest(request):
-    return JsonResponse({'message': 'Hello', 'status_code': 200})
+def rest_name(request):
+    search_key = request.GET['search']
+    results = es_query(search_key, 3)
+    return JsonResponse({'res' : results})
+
+def rest_id(request):
+    search_id = request.GET['id']
+    res = elastic_client.get(index="elasticplaces", doc_type='places', id= search_id)
+    result = res['_source']
+    result['id'] = res['_id']
+    return JsonResponse({'res' : result})
+
+def rest_near(request):
+    search_key = request.GET['search']
+    search_radius = request.GET['radius']
+    search_lat = request.GET['lat']
+    search_lon = request.GET['lon']
+    
+    results = es_query(search_key, 3)
+    return JsonResponse({'res' : results})
 
 # query elasticsearch with keyword, display at results.html
 def search_results(request):
     search_key = request.GET['search']
-    search_query = {
-        "query": {
-            "bool": {
-                "should": [
-                    { "match" : { "name" : search_key }},
-                    { "match" : { "formatted_address" : search_key }},
-                    { "match" : { "types" : search_key }}
-                ]
-            }
-        }
-    }
-    results = []
-    res = elastic_client.search(index=index_name, body=search_query, size=max_size)
-    for item in res['hits']['hits']:
-        temp = {}
-        temp['name'] = item['_source']['name']
-        temp['formatted_address'] = item['_source']['formatted_address']
-        temp['id'] = item['_id']
-        results.append(temp)
+    results = es_query(search_key, max_size)
     paginator = Paginator(results, 15) # Show 15 results per page
     page = request.GET.get('page')
     try:
@@ -58,26 +58,29 @@ def get_by_id(request, _id):
 
 # ajax-livesearch
 def live_search(request):
-    live_results = []
     if request.method == "POST":
-        search_text = request.POST['search_text']
-        search_query = {
-            "query": {
-                "bool": {
-                    "should": [
-                        { "match" : { "name" : search_text }},
-                        { "match" : { "formatted_address" : search_text }},
-                        { "match" : { "types" : search_text }}
-                    ]
-                }
+        search_key = request.POST['search_text']
+        results = es_query(search_key, 5)
+    return render(request, 'searchapp/ajax_search.html', {'results' : results})
+
+def es_query(search_key, results_size):
+    search_query = {
+        "query": {
+            "bool": {
+                "should": [
+                    { "match" : { "name" : search_key }},
+                    { "match" : { "formatted_address" : search_key }},
+                    { "match" : { "types" : search_key }}
+                ]
             }
         }
-        res = elastic_client.search(index=index_name, body=search_query, size=5)
-        for item in res['hits']['hits']:
-            temp = {}
-            temp['name'] = item['_source']['name']
-            temp['formatted_address'] = item['_source']['formatted_address']
-            temp['id'] = item['_id']
-            live_results.append(temp)
-    return render(request, 'searchapp/ajax_search.html', {'results' : live_results})
-
+    }
+    results = []
+    res = elastic_client.search(index=index_name, body=search_query, size=results_size)
+    for item in res['hits']['hits']:
+        temp = {}
+        temp['name'] = item['_source']['name']
+        temp['formatted_address'] = item['_source']['formatted_address']
+        temp['id'] = item['_id']
+        results.append(temp)
+    return results

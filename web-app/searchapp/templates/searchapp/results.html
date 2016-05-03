@@ -1,6 +1,8 @@
 {% extends "searchapp/base.html" %}
 
-{% block content %}
+{% block extra-head %} <title> Results </title> {% endblock %}
+
+{% block inside-green-layout %}
 
 {% for result in res %}
 <li class="list-group-item">

@@ -5,6 +5,7 @@
       <link rel="stylesheet" type="text/css" href="/static/searchapp/search.css" />
       <script src="/static/searchapp/assets/js/jquery-2.0.0.min.js"></script>
       <script src="/static/searchapp/assets/js/ajax.js"></script>
+      {% block extra-head %}{% endblock %}
   </head>
 
   <body>
@@ -17,7 +18,7 @@
       <div class="container">
         <div class="row">
           <div id="custom-search-input">
-            {% block content %}{% endblock %}
+            {% block inside-green-layout %}{% endblock %}
           </div>
         </div>
       </div>

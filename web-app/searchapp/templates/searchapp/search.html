@@ -1,6 +1,8 @@
 {% extends "searchapp/base.html" %}
 
-{% block content %}
+{% block extra-head %} <title> Search </title> {% endblock %}
+
+{% block inside-green-layout %}
 
 <h3>Elastic Search Box</h3>
 {% csrf_token %}
@@ -16,6 +18,3 @@
 </ul>
 
 {% endblock %}
-
-
-            

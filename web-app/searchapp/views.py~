@@ -23,7 +23,6 @@ def rest_id(request):
     separator = ','
     search_id = request.GET['id']
     res = elastic_client.get(index="elasticplaces", doc_type='places', id= search_id)
-    result = {}
     result['id'] = res['_id']
     result['name'] = res['_source']['name']
     result['formatted_address'] = res['_source']['formatted_address'].split(separator, 1)[0]

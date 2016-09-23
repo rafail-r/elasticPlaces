@@ -1,0 +1,18 @@
+curl -XPUT "localhost:9200/_river/es_river/_meta" -d'{
+	"type": "mongodb",
+	"mongodb": {
+		"db": "elasticPlaces", 
+		"collection": "places",
+		"options": {
+			"include_fields": ["_id", "name", "formatted_address", "types", "geometry.location", "rating"]
+		}
+    	},
+	"index": {
+		"name": "elasticplaces", 
+		"type": "places"
+	}
+}'
+
+curl -XDELETE 'http://localhost:9200/_river/'
+
+

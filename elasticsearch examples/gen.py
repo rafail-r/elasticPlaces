@@ -1,17 +1,17 @@
 # coding: utf-8
 from __future__ import division
-import random, string, pymongo
+import random, string, pymongo, sys
 
 
 
 collection = pymongo.MongoClient()['elasticPlaces']['places']
-size = 1000
-
+size = int(sys.argv[1])
+bulk_size = 1000
 
 def main():
 	arr = []
 	cstart = collection.count()
-#fix na petaei ta bulk kathe 10000 px
+	packet = 0
 	for i in range(size):
 		place = {
 		    "name" : "" ,
@@ -33,7 +33,12 @@ def main():
 		place['formatted_address'] = randomword(50)
 		place['icon'] = randomword(50)
 		arr.append(place)
-	collection.insert_many(arr, False)
+		packet += 1
+		if (packet == bulk_size or i == (size - 1)):
+			collection.insert_many(arr, False)
+			packet = 0
+			arr = []
+	
 	cstop = collection.count()
 	print(cstop - cstart)
 

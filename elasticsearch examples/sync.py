@@ -1,7 +1,10 @@
 # coding: utf-8
 
+import pymongo
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 
 # Establish Connection with Elasticsearch
 elastic_client = Elasticsearch()
@@ -9,20 +12,50 @@ elastic_client = Elasticsearch()
 # Establish Connection with MongoDB
 mongo_client = MongoClient()['elasticPlaces']['places']
 
-for place in mongo_client.find():
-	place_id = place['_id']
-	place_lat = place['geometry']['location']['lat']
-	place_lon = place['geometry']['location']['lng']
-	try:
-		del place['_id']
-	except KeyError:
-		pass
-	try:
-		del place['geometry']
-	except KeyError:
-		pass
-	place['location'] = {
-		'lat' : place_lat,
-		'lon' : place_lon
-	}
-	res = elastic_client.index(index='elasticplaces', doc_type='places', id=place_id, body=place)
+bulk_size = 1000
+
+def sync():
+	array = []
+	packet = 0
+	for place in mongo_client.find():
+		new_place = {
+			"_index": "elasticplaces",
+			"_type": "places",
+			"_id": str(place["_id"]),
+			"_source": {}
+		}
+
+		try:
+			new_place["_source"]["name"] = place["name"]
+		except KeyError:
+			pass
+		try:
+			new_place["_source"]["types"] = place["types"]
+		except KeyError:
+			pass
+		try:
+			new_place["_source"]["formatted_address"] = place["formatted_address"]
+		except KeyError:
+			pass
+		try:
+			new_place["_source"]["rating"] = place["rating"]
+		except KeyError:
+			pass
+		try:
+			new_place["_source"]["geometry"]["location"] = place["geometry"]["location"]
+		except KeyError:
+			pass
+
+		array.append(new_place)
+		packet += 1
+	
+		if (packet == bulk_size):
+			helpers.bulk(elastic_client, array)
+			packet = 0
+			array = []
+
+	if (array):
+		helpers.bulk(elastic_client, array)
+
+sync()
+

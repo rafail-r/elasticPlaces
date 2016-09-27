@@ -2,8 +2,6 @@
 from __future__ import division
 import random, string, pymongo, sys
 
-
-
 collection = pymongo.MongoClient()['elasticPlaces']['places']
 size = int(sys.argv[1])
 bulk_size = 1000
@@ -43,12 +41,7 @@ def main():
 	print(cstop - cstart)
 
 
-
-
-
 def randomword(length):
    return ''.join(random.choice(string.lowercase) for i in range(length))
-
-
 
 main()

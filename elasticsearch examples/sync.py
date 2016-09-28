@@ -1,61 +1,56 @@
 # coding: utf-8
 
-import pymongo
+import pymongo, pyelasticsearch, elasticsearch
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 
+
 # Establish Connection with Elasticsearch
-elastic_client = Elasticsearch()
+elastic_client_official   = elasticsearch.Elasticsearch()
+elastic_client_unofficial = pyelasticsearch.client.ElasticSearch()
+
 
 # Establish Connection with MongoDB
 mongo_client = MongoClient()['elasticPlaces']['places']
 
 bulk_size = 1000
 
-def sync():
+# using the official elasticsearch api for python
+def sync_official():
 	array = []
 	packet = 0
-	for place in mongo_client.find():
-		new_place = {
-			"_index": "elasticplaces",
-			"_type": "places",
-			"_id": str(place["_id"]),
-			"_source": {}
-		}
-
-		try:
-			new_place["_source"]["name"] = place["name"]
-		except KeyError:
-			pass
-		try:
-			new_place["_source"]["types"] = place["types"]
-		except KeyError:
-			pass
-		try:
-			new_place["_source"]["formatted_address"] = place["formatted_address"]
-		except KeyError:
-			pass
-		try:
-			new_place["_source"]["rating"] = place["rating"]
-		except KeyError:
-			pass
-		try:
-			new_place["_source"]["geometry"]["location"] = place["geometry"]["location"]
-		except KeyError:
-			pass
-
-		array.append(new_place)
+	for place in mongo_client.find({}, {"name": 1, "types": 1, "formatted_address": 1, "rating": 1, "geometry.location": 1}):
+		place["_id"] = str(place["_id"])
+		place["_index"] = "elasticplaces"
+		place["_type"] = "places"
+		array.append(place)
 		packet += 1
 	
 		if (packet == bulk_size):
-			helpers.bulk(elastic_client, array)
+			helpers.bulk(elastic_client_official, array)
 			packet = 0
 			array = []
 
 	if (array):
-		helpers.bulk(elastic_client, array)
+		helpers.bulk(elastic_client_official, array)
 
-sync()
+# using the pyelasticsearch unofficial api
+def sync_unofficial():
+	array = []
+	packet = 0
+	for place in mongo_client.find({}, {"name": 1, "types": 1, "formatted_address": 1, "rating": 1, "geometry.location": 1}):
+		place["_id"] = str(place["_id"])
+		array.append(place)
+		packet += 1
+	
+		if (packet == bulk_size):
+			elastic_client_unofficial.bulk_index("elasticplaces", "places", array, id_field="_id")
+			packet = 0
+			array = []
+
+	if (array):
+		elastic_client_unofficial.bulk_index("elasticplaces", "places", array, id_field="_id")
+
+sync_official()
 

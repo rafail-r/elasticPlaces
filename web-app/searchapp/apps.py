@@ -10,7 +10,7 @@ index_name = 'elasticplaces'
 max_size = 50
 
 # Establish Connection with MongoDB
-mongo_client = MongoClient()['test_db']['books']
+mongo_client = MongoClient()['elasticPlaces']['places']
 
 class SearchappConfig(AppConfig):
     name = 'searchapp'

@@ -1,0 +1,41 @@
+curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
+{
+  "size" : 5,
+   "query":{
+      "function_score":{
+         "query":{
+            "bool":{
+               "should":[
+                  {
+                     "match":{
+                        "name":{
+                           "query":"bar",
+                           "boost":5
+                        }
+                     }
+                  },
+                  {
+                     "match":{
+                        "types":{
+                           "query":"bar",
+                           "boost":3
+                        }
+                     }
+                  }
+               ]
+            }
+         },
+         "functions":[
+            {
+               "field_value_factor":{
+                  "field":"rating",
+                  "factor":1.2,
+                  "modifier":"sqrt",
+                  "missing":2
+               }
+            }
+         ]
+      }
+   }
+}
+'

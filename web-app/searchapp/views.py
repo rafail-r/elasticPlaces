@@ -68,11 +68,11 @@ def search_results(request):
         page_results = paginator.page(paginator.num_pages)
     return render(request, "searchapp/results.html", {'res' : page_results, 'search_key' : search_key})
 
-# query elasticsearch with id, display at details.html
+# query mongodb with id, display at details.html
 def get_by_id(request, _id):
-    res = elastic_client.get(index="elasticplaces", doc_type='places', id= _id)
-    result = res['_source']
-    result['id'] = res['_id']
+    result = mongo_client.find_one({"_id": _id})
+    result['id'] = result['_id']
+
     return render(request, "searchapp/details.html", {'res' : result})
 
 # ajax-livesearch
@@ -116,17 +116,7 @@ def es_nearme(search_key, lat, lon, results_size):
     
 def es_query(search_key, results_size):
     separator = ','
-    search_query = {
-        "query": {
-            "bool": {
-                "should": [
-                    { "match" : { "name" : search_key }},
-                    { "match" : { "formatted_address" : search_key }},
-                    { "match" : { "types" : search_key }}
-                ]
-            }
-        }
-    }
+    search_query = search_query(search_key)
     results = []
     res = elastic_client.search(index=index_name, body=search_query, size=results_size)
     for item in res['hits']['hits']:    
@@ -141,3 +131,52 @@ def es_query(search_key, results_size):
 		temp['rating'] = 0.
         results.append(temp)
     return results
+
+
+    def search_query(search_key):
+        return  {
+                   "query":{
+                      "function_score":{
+                         "query":{
+                            "bool":{
+                               "should":[
+                                  {
+                                     "match":{
+                                        "name":{
+                                           "query":search_key,
+                                           "boost":5
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "match":{
+                                        "formatted_address":{
+                                           "query":search_key,
+                                           "boost":1
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "match":{
+                                        "types":{
+                                           "query":search_key,
+                                           "boost":3
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         },
+                         "functions":[
+                            {
+                               "field_value_factor":{
+                                  "field":"rating",
+                                  "factor":1.2,
+                                  "modifier":"sqrt",
+                                  "missing":2
+                               }
+                            }
+                         ]
+                      }
+                   }
+                }

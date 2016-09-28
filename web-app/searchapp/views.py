@@ -14,7 +14,7 @@ def search_page(request):
 
 def rest_name(request):
     search_key = request.GET['search']
-    results = es_query(search_key, 8)
+    results = es_query(search_key, 20)
     return JsonResponse({'res' : results})
 
 
@@ -27,7 +27,8 @@ def rest_id(request):
     result['id'] = res['_id']
     result['name'] = res['_source']['name']
     result['formatted_address'] = res['_source']['formatted_address'].split(separator, 1)[0]
-    result['types'] = res['_source']['types'][0]
+    result['lat'] = res['_source']['location']['lat']
+    result['lon'] = res['_source']['location']['lon']
     try:
         result['rating'] = res['_source']['rating']
     except KeyError:
@@ -45,11 +46,10 @@ def rest_id(request):
 
 def rest_near(request):
     search_key = request.GET['search']
-    search_radius = request.GET['radius']
+    #search_radius = request.GET['radius']
     search_lat = request.GET['lat']
     search_lon = request.GET['lon']
-    
-    results = es_query(search_key, 3)
+    results = es_nearme(search_key, search_lat, search_lon, 20)
     return JsonResponse({'res' : results})
 
 # query elasticsearch with keyword, display at results.html
@@ -82,6 +82,38 @@ def live_search(request):
         results = es_query(search_key, 5)
     return render(request, 'searchapp/ajax_search.html', {'results' : results})
 
+def es_nearme(search_key, lat, lon, results_size):
+    separator = ','
+    search_query = {
+	    "query": {
+		    "filtered": {
+		        "filter": {
+		            "geo_distance": {
+		                "distance": "100000 m", 
+		                "location": { 
+		                    "lat":  lat,
+		                    "lon":  lon
+		                }
+		            }
+		        }
+		    }
+	    }
+    }
+    results = []
+    res = elastic_client.search(index=index_name, body=search_query, size=results_size)
+    for item in res['hits']['hits']:    
+	temp = {}
+        temp['name'] = item['_source']['name']
+        temp['formatted_address'] = item['_source']['formatted_address'].split(separator, 1)[0]
+        temp['id'] = item['_id']
+	temp['types'] = item['_source']['types'][0]
+	try:
+		temp['rating'] = item['_source']['rating']
+	except KeyError:
+		temp['rating'] = 0.
+        results.append(temp)
+    return results
+    
 def es_query(search_key, results_size):
     separator = ','
     search_query = {

@@ -22,23 +22,23 @@ def rest_name(request):
 def rest_id(request):
     separator = ','
     search_id = request.GET['id']
-    res = elastic_client.get(index="elasticplaces", doc_type='places', id= search_id)
+    res = result = mongo_client.find_one({"_id": search_id})
     result = {}
     result['id'] = res['_id']
-    result['name'] = res['_source']['name']
-    result['formatted_address'] = res['_source']['formatted_address'].split(separator, 1)[0]
-    result['lat'] = res['_source']['location']['lat']
-    result['lon'] = res['_source']['location']['lon']
+    result['name'] = res['name']
+    result['formatted_address'] = res['formatted_address'].split(separator, 1)[0]
+    result['lat'] = res['geometry']['location']['lat']
+    result['lon'] = res['geometry']['location']['lng']
     try:
-        result['rating'] = res['_source']['rating']
+        result['rating'] = res['rating']
     except KeyError:
         result['rating'] = 0
     try:
-        result['website'] = res['_source']['website']
+        result['website'] = res['website']
     except KeyError:
         result['website'] = " "
     try:
-        result['formatted_phone_number'] = res['_source']['formatted_phone_number']
+        result['formatted_phone_number'] = res['formatted_phone_number']
     except KeyError:
         result['formatted_phone_number'] = " "
     
@@ -84,21 +84,7 @@ def live_search(request):
 
 def es_nearme(search_key, lat, lon, results_size):
     separator = ','
-    search_query = {
-	    "query": {
-		    "filtered": {
-		        "filter": {
-		            "geo_distance": {
-		                "distance": "100000 m", 
-		                "location": { 
-		                    "lat":  lat,
-		                    "lon":  lon
-		                }
-		            }
-		        }
-		    }
-	    }
-    }
+    search_query = nearSearchQuery(search_key, lat, lon)
     results = []
     res = elastic_client.search(index=index_name, body=search_query, size=results_size)
     for item in res['hits']['hits']:    
@@ -116,7 +102,7 @@ def es_nearme(search_key, lat, lon, results_size):
     
 def es_query(search_key, results_size):
     separator = ','
-    search_query = search_query(search_key)
+    search_query = searchQuery(search_key)
     results = []
     res = elastic_client.search(index=index_name, body=search_query, size=results_size)
     for item in res['hits']['hits']:    
@@ -133,50 +119,109 @@ def es_query(search_key, results_size):
     return results
 
 
-    def search_query(search_key):
-        return  {
-                   "query":{
-                      "function_score":{
-                         "query":{
-                            "bool":{
-                               "should":[
-                                  {
-                                     "match":{
-                                        "name":{
-                                           "query":search_key,
-                                           "boost":5
-                                        }
-                                     }
-                                  },
-                                  {
-                                     "match":{
-                                        "formatted_address":{
-                                           "query":search_key,
-                                           "boost":1
-                                        }
-                                     }
-                                  },
-                                  {
-                                     "match":{
-                                        "types":{
-                                           "query":search_key,
-                                           "boost":3
-                                        }
-                                     }
-                                  }
-                               ]
-                            }
-                         },
-                         "functions":[
-                            {
-                               "field_value_factor":{
-                                  "field":"rating",
-                                  "factor":1.2,
-                                  "modifier":"sqrt",
-                                  "missing":2
-                               }
-                            }
-                         ]
+def searchQuery(search_key):
+    return  {
+           "query":{
+              "function_score":{
+                 "query":{
+                    "bool":{
+                       "should":[
+                          {
+                             "match":{
+                                "name":{
+                                   "query":search_key,
+                                   "boost":5
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "formatted_address":{
+                                   "query":search_key,
+                                   "boost":1
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "types":{
+                                   "query":search_key,
+                                   "boost":3
+                                }
+                             }
+                          }
+                       ]
+                    }
+                 },
+                 "functions":[
+                    {
+                       "field_value_factor":{
+                          "field":"rating",
+                          "factor":1.2,
+                          "modifier":"sqrt",
+                          "missing":2
+                       }
+                    }
+                 ],
+                 "boost_mode": "avg"
+              }
+           }
+        }
+
+def nearSearchQuery(search_key, lat, lon):
+    return  {
+           "query":{
+              "function_score":{
+                 "query":{
+                    "bool":{
+                       "should":[
+                          {
+                             "match":{
+                                "name":{
+                                   "query":search_key,
+                                   "boost":5
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "formatted_address":{
+                                   "query":search_key,
+                                   "boost":1
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "types":{
+                                   "query":search_key,
+                                   "boost":3
+                                }
+                             }
+                          }
+                       ],
+                       "filter" : {
+                          "geo_distance" : {
+                              "distance" : "10km",
+                              "location" : {
+                                  "lat" : lat,
+                                  "lon" : lon
+                              }
+                          }
                       }
-                   }
-                }
+                    }
+                 },
+                 "functions":[
+                    {
+                       "field_value_factor":{
+                          "field":"rating",
+                          "factor":1.2,
+                          "modifier":"sqrt",
+                          "missing":2
+                       }
+                    }
+                 ],
+                 "boost_mode": "avg"
+              }
+           }
+        }

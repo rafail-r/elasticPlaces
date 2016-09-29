@@ -24,6 +24,10 @@ def sync_official():
 		place["_id"] = str(place["_id"])
 		place["_index"] = "elasticplaces"
 		place["_type"] = "places"
+		place["location"] = {}
+		place["location"]["lat"] = place["geometry"]["location"]["lat"]
+		place["location"]["lon"] = place["geometry"]["location"]["lng"]
+		del place["geometry"]
 		array.append(place)
 		packet += 1
 	
@@ -53,3 +57,4 @@ def sync_unofficial():
 		elastic_client_unofficial.bulk_index("elasticplaces", "places", array, id_field="_id")
 
 sync_official()
+

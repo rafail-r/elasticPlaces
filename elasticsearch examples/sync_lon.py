@@ -27,6 +27,10 @@ def sync_official():
 		place["location"] = {}
 		place["location"]["lat"] = place["geometry"]["location"]["lat"]
 		place["location"]["lon"] = place["geometry"]["location"]["lng"]
+		if "rating" in place.keys(): 
+			pass
+		else:
+			place["rating"] = 2.5
 		del place["geometry"]
 		array.append(place)
 		packet += 1

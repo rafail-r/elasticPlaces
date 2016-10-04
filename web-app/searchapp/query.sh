@@ -10,7 +10,7 @@ curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
                      "match":{
                         "name":{
                            "query":"bar",
-                           "boost":5
+                           "boost":1
                         }
                      }
                   },
@@ -26,34 +26,36 @@ curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
                      "match":{
                         "types":{
                            "query":"bar",
-                           "boost":3
+                           "boost":1
                         }
                      }
                   }
-               ],
-               "filter" : {
-                  "geo_distance" : {
-                      "distance" : "10km",
-                      "location" : {
-                          "lat" : 38.0444634,
-                          "lon" : 23.7775898
-                      }
-                  }
-              }
+               ]
             }
          },
-         "functions":[
+         "functions": [
             {
-               "field_value_factor":{
-                  "field":"rating",
-                  "factor":1.2,
-                  "modifier":"sqrt",
-                  "missing":2
-               }
+              "gauss": {
+                "location": { 
+                  "origin": { "lat": 37.948124, "lon": 23.623072 },
+                  "offset": "1km",
+                  "scale":  "2km"
+                }
+              },
+              "weight": 1.2
+            },
+            {
+              "linear": {
+                "rating": { 
+                  "origin": "5", 
+                  "offset": "0",
+                  "scale":  "3"
+                }
+              } 
             }
-         ],
-         "boost_mode": "avg"
-      }
+          ],
+             "boost_mode": "avg"
+          }
    }
 
 }

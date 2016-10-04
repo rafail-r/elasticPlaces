@@ -170,58 +170,62 @@ def searchQuery(search_key):
 
 def nearSearchQuery(search_key, lat, lon):
     return  {
-           "query":{
-              "function_score":{
-                 "query":{
-                    "bool":{
-                       "should":[
-                          {
-                             "match":{
-                                "name":{
-                                   "query":search_key,
-                                   "boost":5
-                                }
-                             }
-                          },
-                          {
-                             "match":{
-                                "formatted_address":{
-                                   "query":search_key,
-                                   "boost":1
-                                }
-                             }
-                          },
-                          {
-                             "match":{
-                                "types":{
-                                   "query":search_key,
-                                   "boost":3
-                                }
-                             }
-                          }
-                       ],
-                       "filter" : {
-                          "geo_distance" : {
-                              "distance" : "10km",
-                              "location" : {
-                                  "lat" : lat,
-                                  "lon" : lon
+               "query":{
+                  "function_score":{
+                     "query":{
+                        "bool":{
+                           "should":[
+                              {
+                                 "match":{
+                                    "name":{
+                                       "query":search_key,
+                                       "boost":5
+                                    }
+                                 }
+                              },
+                              {
+                                 "match":{
+                                    "formatted_address":{
+                                       "query":search_key,
+                                       "boost":1
+                                    }
+                                 }
+                              },
+                              {
+                                 "match":{
+                                    "types":{
+                                       "query":search_key,
+                                       "boost":3
+                                    }
+                                 }
                               }
-                          }
-                      }
-                    }
-                 },
-                 "functions":[
-                    {
-                       "field_value_factor":{
-                          "field":"rating",
-                          "factor":1.2,
-                          "modifier":"sqrt",
-                          "missing":2
-                       }
-                    }
-                 ],
-                 "boost_mode": "avg"
-              }
-           }
-        }
+                           ]
+                        }
+                     },
+                     "functions":[
+                        {
+                           "field_value_factor":{
+                              "field":"rating",
+                              "factor":1.2,
+                              "modifier":"sqrt",
+                              "missing":2
+                           }
+                        },
+                        {
+                           "gauss":{
+                              "location":{
+                                 "origin":{
+                                    "lat":lat,
+                                    "lon":lon
+                                 },
+                                 "offset":"1km",
+                                 "scale":"2km"
+                              }
+                           },
+                           "weight":1.2
+                        }
+                     ],
+                     "boost_mode":"avg"
+                  }
+               }
+            }

@@ -51,10 +51,17 @@
 				<td> {{ res.formatted_phone_number }} </td>
 			</tr>
 			<tr> 
+				<td> Types </td>
+				<td>
+				{% for type in res.types %}
+				 	{{ type }} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+				{% endfor %}  
+				</td>
+			</tr>
+			<tr> 
 				<td> <a href="#demo" data-toggle="collapse">Reviews &darr;</a></td>
 				<td> {{ res.user_ratings_total }} </td>
 			</tr>
-			
 			<tr><td></td><td></td></tr>
 		</tbody>
    	</table>

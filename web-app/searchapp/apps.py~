@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from elasticsearch import Elasticsearch
 
 # Establish Connection with Elasticsearch
-elastic_client = Elasticsearch(['http://83.212.96.164:9200'])
+elastic_client = Elasticsearch(['https://83.212.96.164:9200'])
 index_name = 'elasticplaces'
 max_size = 50
 

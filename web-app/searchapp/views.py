@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 import json, requests
 from bson.objectid import ObjectId
 from apps import mongo_client, elastic_client, index_name, max_size
+from helpers import find, find_nearme, parse_results
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
@@ -14,10 +15,8 @@ def search_page(request):
 
 def rest_name(request):
     search_key = request.GET['search']
-    results = es_query(search_key, 20)
+    results = find(search_key, 20)
     return JsonResponse({'res' : results})
-
-
 
 def rest_id(request):
     separator = ','
@@ -49,13 +48,13 @@ def rest_near(request):
     #search_radius = request.GET['radius']
     search_lat = request.GET['lat']
     search_lon = request.GET['lon']
-    results = es_nearme(search_key, search_lat, search_lon, 20)
+    results = find_nearme(search_key, search_lat, search_lon, 20)
     return JsonResponse({'res' : results})
 
 # query elasticsearch with keyword, display at results.html
 def search_results(request):
     search_key = request.GET['search']
-    results = es_query(search_key, max_size)
+    results = find(search_key, max_size)
     paginator = Paginator(results, 15) # Show 15 results per page
     page = request.GET.get('page')
     try:
@@ -72,160 +71,11 @@ def search_results(request):
 def get_by_id(request, _id):
     result = mongo_client.find_one({"_id": _id})
     result['id'] = result['_id']
-
     return render(request, "searchapp/details.html", {'res' : result})
 
 # ajax-livesearch
 def live_search(request):
     if request.method == "POST":
         search_key = request.POST['search_text']
-        results = es_query(search_key, 5)
+        results = find(search_key, 5)
     return render(request, 'searchapp/ajax_search.html', {'results' : results})
-
-def es_nearme(search_key, lat, lon, results_size):
-    separator = ','
-    search_query = nearSearchQuery(search_key, lat, lon)
-    results = []
-    res = elastic_client.search(index=index_name, body=search_query, size=results_size)
-    for item in res['hits']['hits']:    
-	temp = {}
-        temp['name'] = item['_source']['name']
-        temp['formatted_address'] = item['_source']['formatted_address'].split(separator, 1)[0]
-        temp['id'] = item['_id']
-	temp['types'] = item['_source']['types'][0]
-	try:
-		temp['rating'] = item['_source']['rating']
-	except KeyError:
-		temp['rating'] = 0.
-        results.append(temp)
-    return results
-    
-def es_query(search_key, results_size):
-    separator = ','
-    search_query = searchQuery(search_key)
-    results = []
-    res = elastic_client.search(index=index_name, body=search_query, size=results_size)
-    for item in res['hits']['hits']:    
-	temp = {}
-        temp['name'] = item['_source']['name']
-        temp['formatted_address'] = item['_source']['formatted_address'].split(separator, 1)[0]
-        temp['id'] = item['_id']
-	temp['types'] = item['_source']['types'][0]
-	try:
-		temp['rating'] = item['_source']['rating']
-	except KeyError:
-		temp['rating'] = 0.
-        results.append(temp)
-    return results
-
-
-def searchQuery(search_key):
-    return  {
-           "query":{
-              "function_score":{
-                 "query":{
-                    "bool":{
-                       "should":[
-                          {
-                             "match":{
-                                "name":{
-                                   "query":search_key,
-                                   "boost":5
-                                }
-                             }
-                          },
-                          {
-                             "match":{
-                                "formatted_address":{
-                                   "query":search_key,
-                                   "boost":1
-                                }
-                             }
-                          },
-                          {
-                             "match":{
-                                "types":{
-                                   "query":search_key,
-                                   "boost":3
-                                }
-                             }
-                          }
-                       ]
-                    }
-                 },
-                 "functions":[
-                    {
-                       "field_value_factor":{
-                          "field":"rating",
-                          "factor":1.2,
-                          "modifier":"sqrt",
-                          "missing":2
-                       }
-                    }
-                 ],
-                 "boost_mode": "avg"
-              }
-           }
-        }
-
-def nearSearchQuery(search_key, lat, lon):
-    return  {
-               "query":{
-                  "function_score":{
-                     "query":{
-                        "bool":{
-                           "should":[
-                              {
-                                 "match":{
-                                    "name":{
-                                       "query":search_key,
-                                       "boost":5
-                                    }
-                                 }
-                              },
-                              {
-                                 "match":{
-                                    "formatted_address":{
-                                       "query":search_key,
-                                       "boost":1
-                                    }
-                                 }
-                              },
-                              {
-                                 "match":{
-                                    "types":{
-                                       "query":search_key,
-                                       "boost":3
-                                    }
-                                 }
-                              }
-                           ]
-                        }
-                     },
-                     "functions":[
-                        {
-                           "field_value_factor":{
-                              "field":"rating",
-                              "factor":1.2,
-                              "modifier":"sqrt",
-                              "missing":2
-                           }
-                        },
-                        {
-                           "gauss":{
-                              "location":{
-                                 "origin":{
-                                    "lat":lat,
-                                    "lon":lon
-                                 },
-                                 "offset":"1km",
-                                 "scale":"2km"
-                              }
-                           },
-                           "weight":1.2
-                        }
-                     ],
-                     "boost_mode":"avg"
-                  }
-               }
-            }

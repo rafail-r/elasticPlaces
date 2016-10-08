@@ -33,6 +33,10 @@ def rest_id(request):
     except KeyError:
         result['rating'] = 0
     try:
+        result['types'] = res['types']
+    except KeyError:
+        result['types'] = [""]
+    try:
         result['website'] = res['website']
     except KeyError:
         result['website'] = " "

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 import json, requests
 from bson.objectid import ObjectId
 from apps import mongo_client, elastic_client, index_name, max_size
-from helpers import find, find_nearme, parse_results
+from helpers import find, find_nearme, autocomplete
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
@@ -81,5 +81,5 @@ def get_by_id(request, _id):
 def live_search(request):
     if request.method == "POST":
         search_key = request.POST['search_text']
-        results = find(search_key, 5)
+        results = autocomplete(search_key, 5)
     return render(request, 'searchapp/ajax_search.html', {'results' : results})

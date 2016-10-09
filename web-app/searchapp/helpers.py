@@ -1,4 +1,4 @@
-from queries import searchQuery, nearSearchQuery
+from queries import searchQuery, nearSearchQuery, autocompleteQuery
 from apps import mongo_client, elastic_client, index_name, max_size
 
 def find_nearme(search_key, lat, lon, results_size):
@@ -7,7 +7,10 @@ def find_nearme(search_key, lat, lon, results_size):
     
 def find(search_key, results_size):
     search_query = searchQuery(search_key)
-    print search_key
+    return parse_results(search_query, results_size)
+
+def autocomplete(search_key, results_size):
+    search_query = autocompleteQuery(search_key)
     return parse_results(search_query, results_size)
 
 def parse_results(search_query, results_size):
@@ -23,7 +26,6 @@ def parse_results(search_query, results_size):
         try:
             temp['rating'] = item['_source']['rating']
         except KeyError:
-            temp['rating'] = 0.0
+            temp['rating'] = "-"
         results.append(temp)
-        print temp
     return results

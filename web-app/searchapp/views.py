@@ -18,6 +18,11 @@ def rest_name(request):
     results = find(search_key, 20)
     return JsonResponse({'res' : results})
 
+def rest_autocomplete(request):
+    search_key = request.GET['search']
+    results = autocomplete(search_key, 5)
+    return JsonResponse({'res' : results})
+
 def rest_id(request):
     separator = ','
     search_id = request.GET['id']

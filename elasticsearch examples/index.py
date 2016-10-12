@@ -48,14 +48,19 @@ es.indices.create(
 	      			"myGreekLowerCaseFilter" : {
 	      				"type" : "lowercase",
 	      				"language" : "greek"
-	      			}
+	      			},
+				"ngrams_filter": {
+				    "type": "ngram",
+				    "min_gram": 3,
+				    "max_gram": 8
+				}
 	      		},
 	      		"analyzer": {
 	        		"my_analyzer": {
 	          			"type": "custom", 
 		  				"char_filter": ["my_mapping"],
 	          			"tokenizer": "standard",
-	          			"filter": ["lowercase", "myGreekLowerCaseFilter"]
+	          			"filter": ["lowercase", "myGreekLowerCaseFilter", "ngrams_filter"]
 	        		}
 	      		}
 	    	}

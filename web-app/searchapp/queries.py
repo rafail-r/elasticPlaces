@@ -37,7 +37,6 @@ def searchQuery(search_key):
                        "field_value_factor":{
                           "field":"rating",
                           "factor":1.2,
-                          "modifier":"sqrt",
                           "missing":2
                        }
                     }

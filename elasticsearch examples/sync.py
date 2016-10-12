@@ -7,8 +7,8 @@ from elasticsearch import helpers
 
 
 # Establish Connection with Elasticsearch
-elastic_client_official   = elasticsearch.Elasticsearch()
-elastic_client_unofficial = pyelasticsearch.client.ElasticSearch()
+elastic_client_official   = elasticsearch.Elasticsearch(['http://83.212.96.164:9200'])
+elastic_client_unofficial = pyelasticsearch.client.ElasticSearch(['http://83.212.96.164:9200'])
 
 
 # Establish Connection with MongoDB
@@ -21,6 +21,8 @@ def sync_official():
 	array = []
 	packet = 0
 	for place in mongo_client.find({}, {"name": 1, "types": 1, "formatted_address": 1, "rating": 1, "geometry.location": 1}):
+		if ((place["types"][0] == "route") or (place["types"][0] == "street_address")):
+			continue
 		place["_id"] = str(place["_id"])
 		place["_index"] = "elasticplaces"
 		place["_type"] = "places"

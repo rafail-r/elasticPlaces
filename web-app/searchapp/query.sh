@@ -9,7 +9,7 @@ curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
                           {
                              "match":{
                                 "name":{
-                                   "query":"alaxy",
+                                   "query":"galaxy",
                                    "boost":5
                                 }
                              }
@@ -17,7 +17,7 @@ curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
                           {
                              "match":{
                                 "formatted_address":{
-                                   "query":"alaxy",
+                                   "query":"galaxy",
                                    "boost":2
                                 }
                              }
@@ -25,7 +25,7 @@ curl -XPOST 'localhost:9200/elasticplaces/places/_search?pretty' -d '
                           {
                              "match":{
                                 "types":{
-                                   "query":"alaxy",
+                                   "query":"galaxy",
                                    "boost":3 
                                 }
                              }

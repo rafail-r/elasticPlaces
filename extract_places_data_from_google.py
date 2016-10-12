@@ -15,8 +15,8 @@ coord_step = 750 # ~75m
 square_side = 200  # 20 x ~75m = ~1.500m each side of the square
 
 #ta cont einai pou stamatise xtes, kai pou sinexizei simera
-i_cont = 51
-j_cont = 148
+i_cont = 66
+j_cont = 141
 x = 37948124
 y = 23623072
 

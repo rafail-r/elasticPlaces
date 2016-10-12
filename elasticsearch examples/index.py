@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from elasticsearch import Elasticsearch
-es = Elasticsearch()
+es = Elasticsearch(['http://83.212.96.164:9200'])
 
 es.indices.delete(index='elasticplaces', ignore=[400, 404])
 

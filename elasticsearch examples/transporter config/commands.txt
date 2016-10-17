@@ -1,0 +1,4 @@
+mongod --dbpath ~/dbpath/ --replSet mySet
+transporter run --config ~/Desktop/ElasticPlaces/elasticsearch\ examples/transporter\ config/config.yaml ~/Desktop/ElasticPlaces/elasticsearch\ examples/transporter\ config/mongo_es_sync.js 
+
+

@@ -7,6 +7,7 @@ nodes:
   localmongo:
     type: mongodb
     uri: mongodb://localhost/elasticPlaces
+    tail: true
   es:
     type: elasticsearch
     uri: http://localhost:9200/

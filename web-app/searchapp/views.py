@@ -9,20 +9,32 @@ from helpers import find, find_nearme, autocomplete
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
-# homepage
+# homepage for the web app
 def search_page(request):
     return render(request, "searchapp/search.html")
 
+# methods for the rest interface for mobile app
+# search by keyword
 def rest_name(request):
     search_key = request.GET['search']
     results = find(search_key, 20)
     return JsonResponse({'res' : results})
 
+# search by keyword and include geodata scoring
+def rest_near(request):
+    search_key = request.GET['search']
+    search_lat = request.GET['lat']
+    search_lon = request.GET['lon']
+    results = find_nearme(search_key, search_lat, search_lon, 20)
+    return JsonResponse({'res' : results})
+
+# autocomplete results for live search
 def rest_autocomplete(request):
     search_key = request.GET['search']
     results = autocomplete(search_key, 5)
     return JsonResponse({'res' : results})
 
+# get full document from mongodb
 def rest_id(request):
     separator = ','
     search_id = request.GET['id']
@@ -51,14 +63,6 @@ def rest_id(request):
         result['formatted_phone_number'] = " "
     
     return JsonResponse({'res' : result})
-
-def rest_near(request):
-    search_key = request.GET['search']
-    #search_radius = request.GET['radius']
-    search_lat = request.GET['lat']
-    search_lon = request.GET['lon']
-    results = find_nearme(search_key, search_lat, search_lon, 20)
-    return JsonResponse({'res' : results})
 
 # query elasticsearch with keyword, display at results.html
 def search_results(request):

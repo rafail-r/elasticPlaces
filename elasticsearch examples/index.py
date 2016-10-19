@@ -76,6 +76,10 @@ es.indices.create(
 	          			"type": "string",
 	          			"analyzer": "my_analyzer"
 	        		},
+					"types": {
+	          			"type": "string",
+	          			"analyzer": "my_analyzer"
+	        		},
 	        		"location": {
           				"type": "geo_point"
 	        		}

@@ -30,7 +30,11 @@ def rest_near(request):
 
 # autocomplete results for live search
 def rest_autocomplete(request):
+    print 'gggege'
     search_key = request.GET['search']
+   
+    print search_key
+
     results = autocomplete(search_key, 5)
     return JsonResponse({'res' : results})
 

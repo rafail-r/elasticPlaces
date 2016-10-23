@@ -15,32 +15,43 @@ es.indices.create(
 	        		"my_mapping": {
 	         			"type": "mapping",
 	          			"mappings" : [
-	            			"a => α", "A => Α",
-	            			"b => β", "B => Β", 
-	            			"d => δ", "D => Δ",
-	            			"e => ε", "E => Ε",
-	            			"f => φ", "F => Φ",
-	            			"g => γ", "G => Γ",
-	            			"h => η", "H => Η",
-	            			"i => ι", "I => Ι",
-	            			"k => κ", "K => Κ",
-	            			"l => λ", "L => Λ",
-	            			"m => μ", "M => Μ",
-	            			"n => ν", "N => Ν",
-	            			"o => ο", "O => Ο",
-	            			"p => π", "P => Π",
-	            			"r => ρ", "R => Ρ",
-	            			"s => σ", "S => Σ",
-	            			"t => τ", "T => Τ",
-	            			"u => υ", "U => Υ",
-	            			"v => β", "V => Β",
-	            			"w => ω", "W => Ω",
-	            			"x => χ", "X => Χ",
-	            			"y => υ", "Y => Υ",
-	            			"z => ζ", "Z => Ζ",
-	            			"ks => ξ",
-	            			"ps => ψ",
-	            			"th => θ"
+	          				"α => a", "η => i",  "ν => n",  "υ => y",  "ΕΥ => ef", 
+	          				"ά => a", "ή => i",  "Ν => n",  "Υ => y",  "αυ => af", "ου => ou",
+	          				"Α => a", "Η => i",  "ξ => ks", "φ => f",  "αύ => af", "ού => ou",
+	          				"Ά => a", "Ή => i",  "Ξ => ks", "Φ => f",  "Αυ => af", "Ου => ou",
+	          				"β => b", "θ => th", "ο => o",  "χ => x",  "ΑΥ => af", "Ού => ou",
+	          				"Β => b", "Θ => th", "ό => o",  "Χ => x",  "γκ => g",  "ΟΥ => ou",
+	          				"γ => g", "ι => i",  "Ο => o",  "ψ => ps", "Γκ => g",  "ύ => y",
+	          				"Γ => g", "ί => i",  "Ό => o",  "Ψ => ps", "ΓΚ => g", 
+	          				"δ => d", "Ι => i",  "π => p",  "ω => o",  "γγ => g", 
+	          				"Δ => d", "Ί => i",  "Π => p",  "ώ => o",  "Γγ => g", 
+	          				"ε => e", "κ => k",  "ρ => r",  "Ω => o",  "ΓΓ => g", 
+	          				"έ => e", "Κ => k",  "Ρ => r",  "Ώ => o",  "μπ => b", 
+	          				"Ε => e", "λ => l",  "σ => s",  "ς => s",  "ευ => ef", "Μπ => b", 
+	          				"Έ => e", "Λ => l",  "Σ => s",  "οι => i", "εύ => ef", "ΜΠ => b", 
+	          				"ζ => z", "μ => m",  "τ => t",  "οί => i", "Ευ => ef", 
+	          				"Ζ => z", "Μ => m",  "Τ => t",  "Οι => i", "Εύ => ef"
+	          			]
+	        		},
+	        		"my_mapping_two": {
+	         			"type": "mapping",
+	          			"mappings" : [
+	          				"α => a", "η => h",  "ν => n",  "υ => i",  "Οί => i",  "ΕΥ => ef", "ΝΤ => d",
+	          				"ά => a", "ή => h",  "Ν => n",  "Υ => i",  "ΟΙ => i",  "αυ => af", "ου => ou",
+	          				"Α => a", "Η => h",  "ξ => ks", "φ => f",  "αι => e",  "αύ => af", "ού => ou",
+	          				"Ά => a", "Ή => h",  "Ξ => ks", "Φ => f",  "αί => e",  "Αυ => af", "Ου => ou",
+	          				"β => v", "θ => th", "ο => o",  "χ => x",  "Αι => e",  "ΑΥ => af", "Ού => ou",
+	          				"Β => v", "Θ => th", "ό => o",  "Χ => x",  "Αί => e",  "γκ => g",  "ΟΥ => ou",
+	          				"γ => g", "ι => i",  "Ο => o",  "ψ => ps", "ΑΙ => e",  "Γκ => g",  "ύ => i",
+	          				"Γ => g", "ί => i",  "Ό => o",  "Ψ => ps", "ει => i",  "ΓΚ => g", 
+	          				"δ => d", "Ι => i",  "π => p",  "ω => w",  "εί => i",  "γγ => g", 
+	          				"Δ => d", "Ί => i",  "Π => p",  "ώ => w",  "Ει => i",  "Γγ => g", 
+	          				"ε => e", "κ => k",  "ρ => r",  "Ω => w",  "Εί => i",  "ΓΓ => g", 
+	          				"έ => e", "Κ => k",  "Ρ => r",  "Ώ => w",  "ΕΙ => i",  "μπ => b", 
+	          				"Ε => e", "λ => l",  "σ => s",  "ς => s",  "ευ => ef", "Μπ => b", 
+	          				"Έ => e", "Λ => l",  "Σ => s",  "οι => i", "εύ => ef", "ΜΠ => b", 
+	          				"ζ => z", "μ => m",  "τ => t",  "οί => i", "Ευ => ef", "ντ => d", 
+	          				"Ζ => z", "Μ => m",  "Τ => t",  "Οι => i", "Εύ => ef", "Ντ => d"
 	          			]
 	        		}
 	      		},
@@ -49,16 +60,22 @@ es.indices.create(
 	      				"type" : "lowercase",
 	      				"language" : "greek"
 	      			},
-				"ngrams_filter": {
-				    "type": "ngram",
-				    "min_gram": 3,
-				    "max_gram": 8
-				}
+					"ngrams_filter": {
+					    "type": "ngram",
+					    "min_gram": 3,
+					    "max_gram": 8
+					}
 	      		},
 	      		"analyzer": {
 	        		"my_analyzer": {
 	          			"type": "custom", 
 		  				"char_filter": ["my_mapping"],
+	          			"tokenizer": "standard",
+	          			"filter": ["lowercase", "myGreekLowerCaseFilter", "ngrams_filter"]
+	        		},
+	        		"my_analyzer_two": {
+	        			"type": "custom", 
+		  				"char_filter": ["my_mapping_two"],
 	          			"tokenizer": "standard",
 	          			"filter": ["lowercase", "myGreekLowerCaseFilter", "ngrams_filter"]
 	        		}
@@ -70,7 +87,13 @@ es.indices.create(
 	      		"properties": {
 	        		"name": {
 	          			"type": "string",
-	          			"analyzer": "my_analyzer"
+	          			"analyzer": "my_analyzer",
+	          			"fields" : {
+	          				"greeklish": {
+	          					"type": "string",
+	          					"analyzer": "my_analyzer_two"
+	          				}
+	          			}
 			        },
 			        "formatted_address": {
 	          			"type": "string",

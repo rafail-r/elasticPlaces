@@ -1,3 +1,4 @@
+# coding: utf-8
 def searchQuery(search_key):
     return  {
            "query":{
@@ -8,6 +9,14 @@ def searchQuery(search_key):
                           {
                              "match":{
                                 "name":{
+                                   "query":search_key,
+                                   "boost":5
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "name.greeklish":{
                                    "query":search_key,
                                    "boost":5
                                 }
@@ -65,7 +74,7 @@ def autocompleteQuery(search_key):
         "query":search_key,
         "type":"phrase_prefix",
         "max_expansions" : 1000,
-        "fields":[ "name"]
+        "fields":[ "name", "name.greeklish"]
       }
     }
   }
@@ -80,6 +89,14 @@ def nearSearchQuery(search_key, lat, lon):
                               {
                                  "match":{
                                     "name":{
+                                       "query":search_key,
+                                       "boost":5
+                                    }
+                                 }
+                              },
+                              {
+                                 "match":{
+                                    "name.greeklish":{
                                        "query":search_key,
                                        "boost":5
                                     }

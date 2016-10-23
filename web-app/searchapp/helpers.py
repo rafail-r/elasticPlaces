@@ -1,3 +1,4 @@
+# coding: utf-8
 from queries import searchQuery, nearSearchQuery, autocompleteQuery
 from apps import mongo_client, elastic_client, index_name, max_size
 

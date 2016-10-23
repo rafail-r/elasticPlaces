@@ -97,11 +97,23 @@ es.indices.create(
 			        },
 			        "formatted_address": {
 	          			"type": "string",
-	          			"analyzer": "my_analyzer"
+	          			"analyzer": "my_analyzer",
+	          			"fields" : {
+	          				"greeklish": {
+	          					"type": "string",
+	          					"analyzer": "my_analyzer_two"
+	          				}
+	          			}
 	        		},
 					"types": {
 	          			"type": "string",
-	          			"analyzer": "my_analyzer"
+	          			"analyzer": "my_analyzer",
+	          			"fields" : {
+	          				"greeklish": {
+	          					"type": "string",
+	          					"analyzer": "my_analyzer_two"
+	          				}
+	          			}
 	        		},
 	        		"location": {
           				"type": "geo_point"

@@ -32,7 +32,23 @@ def searchQuery(search_key):
                           },
                           {
                              "match":{
+                                "formatted_address.greeklish":{
+                                   "query":search_key,
+                                   "boost":2
+                                }
+                             }
+                          },
+                          {
+                             "match":{
                                 "types":{
+                                   "query":search_key,
+                                   "boost":3 
+                                }
+                             }
+                          },
+                          {
+                             "match":{
+                                "types.greeklish":{
                                    "query":search_key,
                                    "boost":3 
                                 }
@@ -55,17 +71,7 @@ def searchQuery(search_key):
            }
         }
 
-#def autocompleteQuery(search_key):
-#  return  {
-#    "query":{
-#      "multi_match" : {
-#        "query":search_key,
-#        "type":"phrase_prefix",
-#        "max_expansions" : 1000,
-#        "fields":[ "name^5", "formatted_address^2", "types^3"]
-#      }
-#    }
-#  }
+
 
 def autocompleteQuery(search_key):
   return  {
@@ -74,7 +80,7 @@ def autocompleteQuery(search_key):
         "query":search_key,
         "type":"phrase_prefix",
         "max_expansions" : 1000,
-        "fields":[ "name", "name.greeklish"]
+        "fields":[ "name^5", "name.greeklish^5", "types^3", "types.greeklish^3", "formatted_address^2", "formatted_address.greeklish^2"]
       }
     }
   }
@@ -106,7 +112,15 @@ def nearSearchQuery(search_key, lat, lon):
                                  "match":{
                                     "formatted_address":{
                                        "query":search_key,
-                                       "boost":1
+                                       "boost":2
+                                    }
+                                 }
+                              },
+                              {
+                                 "match":{
+                                    "formatted_address.greeklish":{
+                                       "query":search_key,
+                                       "boost":2
                                     }
                                  }
                               },
@@ -114,7 +128,15 @@ def nearSearchQuery(search_key, lat, lon):
                                  "match":{
                                     "types":{
                                        "query":search_key,
-                                       "boost":3
+                                       "boost":3 
+                                    }
+                                 }
+                              },
+                              {
+                                 "match":{
+                                    "types.greeklish":{
+                                       "query":search_key,
+                                       "boost":3 
                                     }
                                  }
                               }
